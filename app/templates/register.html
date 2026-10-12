@@ -5,8 +5,8 @@
 <div class="auth-shell">
   <div class="auth-panel">
     <a class="auth-back" href="{{ url_for('index_view') }}">← Home</a>
-    <div class="brand-wordmark">FastStarter</div>
-    <p class="auth-tagline">Create an account</p>
+    <div class="brand-wordmark">StarServe</div>
+    <p class="auth-tagline">Create your account and start earning recognition.</p>
 
     <form method="POST" action="{{ url_for('register_view') }}">
       <div class="mb-3">
@@ -22,8 +22,8 @@
         <input class="form-control" type="password" id="password" name="password" required>
       </div>
       <div class="d-grid gap-2 mb-3">
-        <button class="btn btn-primary btn-lg" type="submit">Register</button>
-        <a class="btn btn-outline-secondary" href="{{ url_for('login_view') }}">Back to sign in</a>
+        <button class="btn btn-brand btn-lg" type="submit">Register</button>
+        <a class="btn btn-outline-brand" href="{{ url_for('login_view') }}">Back to sign in</a>
       </div>
 
       {% for message in get_flashed_messages(request) %}

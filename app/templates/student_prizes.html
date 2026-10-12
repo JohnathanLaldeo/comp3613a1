@@ -1,0 +1,40 @@
+{% extends "authenticated-base.html" %}
+{% block title %}Prizes{% endblock %}
+
+{% block subpage_content %}
+<div class="student-shell">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+      <p class="eyebrow">Rewards</p>
+      <h1 class="page-title mb-0">Redeem your points</h1>
+    </div>
+    <div class="summary-pill">{{ approved_hours }} points earned</div>
+  </div>
+
+  <div class="row g-4">
+    {% for prize in prizes %}
+    <div class="col-md-6 col-xl-4">
+      <div class="award-card">
+        <div class="award-meta">{{ prize.category }}</div>
+        <h3>{{ prize.name }}</h3>
+        <p>{{ prize.description }}</p>
+        <div class="award-footer">
+          <span>{{ prize.points_required }} pts</span>
+          <span>{{ prize.stock_available }} left</span>
+        </div>
+
+        {% if prize.id in redeemed_ids %}
+        <button class="btn btn-secondary w-100" type="button" disabled>Redeemed</button>
+        {% elif approved_hours >= prize.points_required and prize.stock_available > 0 %}
+        <form method="post" action="{{ url_for('user_prize_redeem', prize_id=prize.id) }}">
+          <button class="btn btn-brand w-100" type="submit">Redeem prize</button>
+        </form>
+        {% else %}
+        <button class="btn btn-outline-brand w-100" type="button" disabled>Need more hours</button>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "authenticated-base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+
+{% block subpage_content %}
+<div class="student-shell">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+      <p class="eyebrow">Student Awards</p>
+      <h1 class="page-title mb-0">Your impact dashboard</h1>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-brand" href="{{ url_for('user_hours_new_view') }}">Log hours</a>
+      <a class="btn btn-outline-brand" href="{{ url_for('user_prizes_view') }}">View prizes</a>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="stat-card primary">
+        <span class="stat-label">Approved hours</span>
+        <strong class="stat-value">{{ approved_hours }}</strong>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <span class="stat-label">Pending review</span>
+        <strong class="stat-value">{{ pending_count }}</strong>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card gold">
+        <span class="stat-label">Points available</span>
+        <strong class="stat-value">{{ points }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="phase-panel">
+        <div class="section-header">
+          <h2>Recent submissions</h2>
+          <a href="{{ url_for('user_hours_view') }}">See all</a>
+        </div>
+        {% if logs %}
+        <div class="list-stack">
+          {% for log in logs %}
+          <div class="list-item">
+            <div>
+              <div class="list-title">{{ log.event_date }}</div>
+              <div class="list-copy">{{ log.description }}</div>
+            </div>
+            <div class="text-end">
+              <span class="status-badge status-{{ log.status }}">{{ log.status }}</span>
+              <div class="list-hours">{{ log.hours }} hrs</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">No volunteer hours submitted yet.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="phase-panel">
+        <div class="section-header">
+          <h2>Prize progress</h2>
+          <a href="{{ url_for('user_prizes_view') }}">Open catalog</a>
+        </div>
+        {% if prizes %}
+        <div class="award-stack">
+          {% for prize in prizes %}
+          <div class="award-item">
+            <div>
+              <strong>{{ prize.name }}</strong>
+              <div class="tiny-copy">{{ prize.points_required }} points</div>
+            </div>
+            <span class="pill {% if points >= prize.points_required %}available{% else %}locked{% endif %}">
+              {% if points >= prize.points_required %}Ready{% else %}Locked{% endif %}
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">No prizes available.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

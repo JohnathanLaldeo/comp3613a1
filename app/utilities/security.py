@@ -11,7 +11,7 @@ def encrypt_password(password: str):
 
 
 def verify_password(plaintext_password: str, encrypted_password):
-    return password_hash.verify(password=plaintext_password, hash=encrypted_password)
+    return password_hash.verify(plaintext_password, encrypted_password)
 
 
 def create_access_token(
@@ -37,3 +37,4 @@ def access_token_cookie_kwargs() -> dict:
         "samesite": "none" if is_prod else "lax",
         "secure": is_prod,
     }
+

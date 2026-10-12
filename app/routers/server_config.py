@@ -1,4 +1,4 @@
-"""Password-gated ops console at ``/config``.
+﻿"""Password-gated ops console at ``/config``.
 
 Unlock with ``CONFIG_PASSWORD`` from the environment. When that value is empty,
 the routes respond with 404 so the panel stays off by default.

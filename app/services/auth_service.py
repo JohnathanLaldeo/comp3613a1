@@ -3,6 +3,7 @@ from app.utilities.security import encrypt_password, verify_password, create_acc
 from app.schemas.user import RegularUserCreate
 from typing import Optional
 
+
 class AuthService:
     def __init__(self, user_repo: UserRepository):
         self.user_repo = user_repo
@@ -11,13 +12,13 @@ class AuthService:
         user = self.user_repo.get_by_username(username)
         if not user or not verify_password(plaintext_password=password, encrypted_password=user.password):
             return None
-        access_token = create_access_token(data={"sub": f"{user.id}", "role": user.role})
-        return access_token
+        return create_access_token(data={"sub": str(user.id), "role": user.role})
 
     def register_user(self, username: str, email: str, password: str):
         new_user = RegularUserCreate(
-            username=username, 
-            email=email, 
-            password=encrypt_password(password)
+            username=username,
+            email=email,
+            password=password,
+            role="regular_user",
         )
         return self.user_repo.create(new_user)

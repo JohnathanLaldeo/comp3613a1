@@ -1,0 +1,27 @@
+{
+  "system": "Student Awards",
+  "actors": [
+    {"name": "Student", "side": "left"},
+    {"name": "Admin", "side": "right"}
+  ],
+  "use_cases": [
+    {"name": "Log Volunteer Hours", "actors": ["Student"]},
+    {
+      "name": "Approve Volunteer Hours",
+      "actors": ["Admin"],
+      "includes": ["Review Submitted Hours"]
+    },
+    {
+      "name": "Reject Volunteer Hours",
+      "actors": ["Admin"],
+      "includes": ["Review Submitted Hours"]
+    },
+    {"name": "Review Submitted Hours"},
+    {
+      "name": "Redeem Prize",
+      "actors": ["Student"],
+      "includes": ["Choose Available Prize"]
+    },
+    {"name": "Choose Available Prize"}
+  ]
+}

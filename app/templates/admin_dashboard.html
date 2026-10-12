@@ -1,0 +1,34 @@
+{% extends "authenticated-base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block subpage_content %}
+<div class="student-shell">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+      <p class="eyebrow">Volunteer review</p>
+      <h1 class="page-title mb-0">Review queue</h1>
+    </div>
+    <div class="summary-pill">{{ total_pending }} pending</div>
+  </div>
+
+  {% if pending_logs %}
+  <div class="phase-panel">
+    <div class="list-stack">
+      {% for log in pending_logs %}
+      <div class="list-item admin-item">
+        <div>
+          <div class="list-title">{{ log.description }}</div>
+          <div class="list-copy">Submitted by user #{{ log.student_id }} · {{ log.event_date }} · {{ log.hours }} hrs</div>
+        </div>
+        <div class="text-end">
+          <a class="btn btn-brand btn-sm" href="{{ url_for('admin_review_detail', log_id=log.id) }}">Review</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div class="phase-panel empty-state">No submissions waiting for review.</div>
+  {% endif %}
+</div>
+{% endblock %}

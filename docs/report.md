@@ -5,39 +5,131 @@ Draft this file with the Guide. **Update it after every phase milestone** before
 Do not put your student ID in this file if you will commit it. The PDF cover adds your name and ID at export time.
 
 ## Assigned project
+Student Awards
 
 ## Three workflows
 
-### 1.
+### 1. Log Volunteer Hours (Student)
 
-### 2.
+### 2. Approve Volunteer Hours (Admin)
 
-### 3.
+### 3. Redeem Prize (Student)
 
 ## Use case diagram
 
 ![Use case diagram](diagrams/use-case.png)
 
+Phase 2 notes: Reviewing submitted hours is included in both approval and rejection. Rejection is a separate outcome rather than an extension. Choosing an available prize is included in redemption. Students and Admins have only the role-specific use cases shown; no use cases are shared across roles.
+
 ## Model diagram
 
-First draft. Update this section in Phase 5 when polish revises the model, and note what changed.
+Assumes a single `User` table for both students and admins, with role-based permissions; volunteer entries are approved separately from prize redemption. This captures the three MVP workflows without adding a separate leaderboard table.
 
 ```mermaid
 erDiagram
-  ENTITY ||--o{ OTHER : relates
+  USER ||--o{ VOLUNTEER_LOG : submits
+  USER ||--o{ VOLUNTEER_LOG : approves
+  USER ||--o{ REDEMPTION : redeems
+  PRIZE ||--o{ REDEMPTION : redeemed_for
+
+  USER {
+    bigint id PK
+    string username
+    string password_hash
+    string full_name
+    string email
+    string role
+  }
+
+  VOLUNTEER_LOG {
+    bigint id PK
+    bigint student_id FK
+    bigint approved_by FK
+    date submitted_at
+    date event_date
+    int hours
+    text description
+    string status
+    text admin_notes
+    datetime approved_at
+  }
+
+  PRIZE {
+    bigint id PK
+    string name
+    text description
+    int points_required
+    string category
+    boolean active
+    int stock_available
+  }
+
+  REDEMPTION {
+    bigint id PK
+    bigint student_id FK
+    bigint prize_id FK
+    datetime redeemed_at
+    string status
+    text notes
+  }
 ```
 
 ## Wireframes
 
-Embed each student-crafted wireframe here (Phase 4). Paths are relative to this file:
+### Student Dashboard
 
-```markdown
-### Explore / Search Publications
+![Student Dashboard](wireframes/1_student_dashboard.png)
 
-![Explore / Search Publications](wireframes/explore.png)
-```
+### Log Volunteer Hours (Student)
 
-`python manage.py report` also embeds any PNG/JPG still missing from `docs/wireframes/`.
+![Log Volunteer Hours](wireframes/2_log_hours.png)
+
+### My Hours (Student)
+
+![My Hours](wireframes/3_my_hours.png)
+
+### Prizes (Student)
+
+![Prizes](wireframes/4_prizes.png)
+
+### Redeem Prize (Student)
+
+![Redeem Prize](wireframes/5_redeem_confirmation.png)
+
+### Admin Dashboard
+
+![Admin Dashboard](wireframes/6_admin_dashboard.png)
+
+### Review Queue (Admin)
+
+![Review Queue](wireframes/7_review_queue.png)
+
+### Review Submission (Admin)
+
+![Review Submission](wireframes/8_review_detail.png)
+
+Model notes for Phase 4:
+- `VOLUNTEER_LOG.status` — seen on the review queue and submission review screens.
+- `VOLUNTEER_LOG.admin_notes` — seen on the review submission screen.
+- No new entities or relationships are required beyond the existing model draft; use-case coverage is complete and the workflow paths are legible.
+
+<!-- student-build:wireframe-coverage
+use_case: Log Volunteer Hours (Student)
+image: docs/wireframes/2_log_hours.png
+covered: yes
+-->
+
+<!-- student-build:wireframe-coverage
+use_case: Approve Volunteer Hours (Admin)
+image: docs/wireframes/7_review_queue.png
+covered: yes
+-->
+
+<!-- student-build:wireframe-coverage
+use_case: Redeem Prize (Student)
+image: docs/wireframes/5_redeem_confirmation.png
+covered: yes
+-->
 
 ## Theming
 

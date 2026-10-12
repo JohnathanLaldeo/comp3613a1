@@ -1,0 +1,29 @@
+{% extends "authenticated-base.html" %}
+{% block title %}Log Hours{% endblock %}
+
+{% block subpage_content %}
+<div class="student-shell narrow">
+  <div class="phase-panel">
+    <div class="section-header mb-3">
+      <h2>Log volunteer hours</h2>
+      <a href="{{ url_for('user_hours_view') }}">Back to my hours</a>
+    </div>
+
+    <form method="post" action="{{ url_for('user_hours_create') }}">
+      <div class="mb-3">
+        <label class="form-label" for="event_date">Volunteer date</label>
+        <input class="form-control" type="date" id="event_date" name="event_date" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="hours">Hours</label>
+        <input class="form-control" type="number" id="hours" name="hours" min="1" max="50" value="1" required>
+      </div>
+      <div class="mb-4">
+        <label class="form-label" for="description">What did you do?</label>
+        <textarea class="form-control" id="description" name="description" rows="4" placeholder="e.g. Mentored first-year students during the welcome week" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-brand">Submit for approval</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

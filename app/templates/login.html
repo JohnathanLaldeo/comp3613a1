@@ -5,8 +5,8 @@
 <div class="auth-shell">
   <div class="auth-panel">
     <a class="auth-back" href="{{ url_for('index_view') }}">← Home</a>
-    <div class="brand-wordmark">FastStarter</div>
-    <p class="auth-tagline">Sign in to continue</p>
+    <div class="brand-wordmark">StarServe</div>
+    <p class="auth-tagline">Welcome back — continue your service journey.</p>
 
     <form method="POST" action="{{ url_for('login_action_ajax') }}">
       <div class="mb-3">
@@ -18,8 +18,8 @@
         <input class="form-control" type="password" id="password" name="password" required>
       </div>
       <div class="d-grid gap-2 mb-3">
-        <button class="btn btn-primary btn-lg" type="submit">Sign in</button>
-        <a class="btn btn-outline-secondary" href="{{ url_for('register_view') }}">Create an account</a>
+        <button class="btn btn-brand btn-lg" type="submit">Sign in</button>
+        <a class="btn btn-outline-brand" href="{{ url_for('register_view') }}">Create an account</a>
       </div>
     </form>
 
