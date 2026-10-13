@@ -94,6 +94,33 @@ async def user_prizes_view(
     )
 
 
+@router.get("/app/prizes/{prize_id}/confirm", response_class=HTMLResponse)
+async def user_prize_confirm_view(
+    request: Request,
+    user: AuthDep,
+    db: SessionDep,
+    prize_id: int,
+):
+    service = AwardService(AwardRepository(db))
+    try:
+        context = service.get_prize_confirmation(
+            student_id=user.id,
+            prize_id=prize_id,
+        )
+        context["user"] = user
+        return templates.TemplateResponse(
+            request=request,
+            name="student_prize_confirm.html",
+            context=context,
+        )
+    except ValueError as exc:
+        flash(request, str(exc), "danger")
+        return RedirectResponse(
+            url=request.url_for("user_prizes_view"),
+            status_code=status.HTTP_303_SEE_OTHER,
+        )
+
+
 @router.post("/app/prizes/{prize_id}/redeem", response_class=HTMLResponse)
 async def user_prize_redeem(
     request: Request,

@@ -44,7 +44,12 @@ def create_db_and_tables() -> None:
 
 def _migrate_volunteer_log_fields() -> None:
     columns = {column["name"] for column in inspect(engine).get_columns("volunteerlog")}
-    if "activity" in columns and "notes" in columns:
+    indexes = {index["name"] for index in inspect(engine).get_indexes("volunteerlog")}
+    if (
+        "activity" in columns
+        and "notes" in columns
+        and "ix_volunteerlog_approved_at" in indexes
+    ):
         return
 
     with engine.begin() as connection:
@@ -59,6 +64,13 @@ def _migrate_volunteer_log_fields() -> None:
                 text(
                     "UPDATE volunteerlog SET activity = description "
                     "WHERE activity = ''"
+                )
+            )
+        if "ix_volunteerlog_approved_at" not in indexes:
+            connection.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_volunteerlog_approved_at "
+                    "ON volunteerlog (approved_at)"
                 )
             )
 

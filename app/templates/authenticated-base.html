@@ -7,7 +7,9 @@
     <nav class="awards-nav" aria-label="Main navigation">
       {% if user.role == "admin" %}
       <a class="awards-nav-link {{ 'active' if request.url.path == '/admin' else '' }}"
-         href="{{ url_for('admin_home_view') }}">Admin Dashboard</a>
+         href="{{ url_for('admin_home_view') }}">Dashboard</a>
+      <a class="awards-nav-link {{ 'active' if request.url.path.startswith('/admin/review') else '' }}"
+         href="{{ url_for('admin_review_queue_view') }}">Review Queue</a>
       {% else %}
       <a class="awards-nav-link {{ 'active' if request.url.path == '/app' else '' }}"
          href="{{ url_for('user_home_view') }}">Dashboard</a>

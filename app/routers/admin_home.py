@@ -16,11 +16,27 @@ async def admin_home_view(
     db: SessionDep,
 ):
     award_service = AwardService(AwardRepository(db))
-    context = award_service.get_admin_queue()
+    context = award_service.get_admin_dashboard()
     context["user"] = user
     return templates.TemplateResponse(
         request=request,
         name="admin_dashboard.html",
+        context=context,
+    )
+
+
+@router.get("/admin/reviews", response_class=HTMLResponse)
+async def admin_review_queue_view(
+    request: Request,
+    user: AdminDep,
+    db: SessionDep,
+):
+    award_service = AwardService(AwardRepository(db))
+    context = award_service.get_admin_queue()
+    context["user"] = user
+    return templates.TemplateResponse(
+        request=request,
+        name="admin_queue.html",
         context=context,
     )
 
@@ -32,11 +48,11 @@ async def admin_review_detail(
     db: SessionDep,
     log_id: int,
 ):
-    award_repo = AwardRepository(db)
-    log = award_repo.get_log_by_id(log_id)
+    award_service = AwardService(AwardRepository(db))
+    log = award_service.get_log_for_review(log_id)
     if log is None:
         flash(request, "Volunteer log not found", "danger")
-        return RedirectResponse(url=request.url_for("admin_home_view"), status_code=status.HTTP_303_SEE_OTHER)
+        return RedirectResponse(url=request.url_for("admin_review_queue_view"), status_code=status.HTTP_303_SEE_OTHER)
 
     return templates.TemplateResponse(
         request=request,
@@ -61,7 +77,7 @@ async def admin_approve_log(
         admin_notes=admin_notes,
     )
     flash(request, "Volunteer hours approved.")
-    return RedirectResponse(url=request.url_for("admin_home_view"), status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url=request.url_for("admin_review_queue_view"), status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/admin/review/{log_id}/reject", response_class=HTMLResponse)
@@ -73,11 +89,18 @@ async def admin_reject_log(
     admin_notes: str = Form(default=""),
 ):
     award_service = AwardService(AwardRepository(db))
-    award_service.decide_log(
-        log_id=log_id,
-        admin_id=user.id,
-        action="rejected",
-        admin_notes=admin_notes,
-    )
+    try:
+        award_service.decide_log(
+            log_id=log_id,
+            admin_id=user.id,
+            action="rejected",
+            admin_notes=admin_notes,
+        )
+    except ValueError as exc:
+        flash(request, str(exc), "danger")
+        return RedirectResponse(
+            url=request.url_for("admin_review_detail", log_id=log_id),
+            status_code=status.HTTP_303_SEE_OTHER,
+        )
     flash(request, "Volunteer hours rejected.")
-    return RedirectResponse(url=request.url_for("admin_home_view"), status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url=request.url_for("admin_review_queue_view"), status_code=status.HTTP_303_SEE_OTHER)

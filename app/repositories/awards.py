@@ -6,6 +6,7 @@ from typing import Optional
 from sqlmodel import Session, func, select
 
 from app.models.awards import Prize, Redemption, VolunteerLog
+from app.models.user import User
 
 
 class AwardRepository:
@@ -49,6 +50,46 @@ class AwardRepository:
             .where(VolunteerLog.status == "pending")
             .order_by(VolunteerLog.submitted_at.asc())
         ).all()
+
+    def get_pending_summaries(self, limit: int | None = None) -> list[dict]:
+        statement = (
+            select(VolunteerLog, User.username)
+            .join(User, VolunteerLog.student_id == User.id)
+            .where(VolunteerLog.status == "pending")
+            .order_by(VolunteerLog.submitted_at.desc())
+        )
+        if limit is not None:
+            statement = statement.limit(limit)
+        rows = self.db.exec(statement).all()
+        return [
+            {
+                "log_id": log.id,
+                "student": username,
+                "event_date": log.event_date,
+                "activity": log.activity,
+                "hours": log.hours,
+                "status": log.status,
+            }
+            for log, username in rows
+        ]
+
+    def count_logs(
+        self,
+        status: str,
+        *,
+        starts_at: datetime | None = None,
+        ends_at: datetime | None = None,
+    ) -> int:
+        statement = (
+            select(func.count())
+            .select_from(VolunteerLog)
+            .where(VolunteerLog.status == status)
+        )
+        if starts_at is not None:
+            statement = statement.where(VolunteerLog.approved_at >= starts_at)
+        if ends_at is not None:
+            statement = statement.where(VolunteerLog.approved_at < ends_at)
+        return int(self.db.exec(statement).one())
 
     def get_log_by_id(self, log_id: int) -> Optional[VolunteerLog]:
         return self.db.get(VolunteerLog, log_id)

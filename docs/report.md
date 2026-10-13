@@ -52,7 +52,7 @@ erDiagram
     text notes
     string status
     text admin_notes
-    datetime approved_at
+    datetime approved_at "indexed decision timestamp"
   }
 
   PRIZE {
@@ -144,6 +144,12 @@ The student dashboard has been polished against its wireframe: student navigatio
 
 Log Volunteer Hours was revised to store Activity separately from optional text Notes/proof, following the student's model and workflow choices. The form and student/admin log views use those fields; existing volunteer log descriptions are migrated to Activity at startup. The student verified the form against its wireframe and confirmed the submitted details persist and display.
 
+The admin dashboard now provides Pending Reviews, Approved Today, Rejected Today, an Open Review Queue action, and a Latest Pending table with Student, Activity, and Hours. Decision totals use the `approved_at` timestamp and UTC day boundaries; that field is indexed, with a startup migration for existing databases. Admin navigation includes Dashboard and Review Queue. The username is shown as the student label because the current User model has no separate display-name field. The student confirmed that the dashboard layout and totals match the wireframe and current records.
+
+The review detail screen now follows the wireframe's side-by-side submission details and required rejection-reason field. The reason is validated in the service and saved in the existing admin-notes field. The student verified the review queue, detail layout, approval/rejection actions, required-reason behavior, and updated dashboard totals against the wireframes.
+
+Prize redemption now opens a confirmation screen showing the prize, cost, current points balance, and balance after redemption. Confirm posts to the existing redemption service/repository flow; Cancel returns to the catalog. The student tested as Bob: Redeem opened the confirmation page without committing, and pressing Confirm redeemed the prize.
+
 The Log Volunteer Hours wireframe now has Date, Activity, Hours, an admin-review note, optional text Notes/proof, and Submit for Review / Cancel actions. The student selected text-only notes and identified the service as the layer coordinating submission validation. File uploads and fractional-hour entries are not included.
 
 <!-- student-build:code-check
@@ -174,6 +180,46 @@ architecture_ok: yes
 implement_confidence: 0.82
 passed: yes
 note: Student bound activity and optional notes from the form and passed them to the service.
+-->
+
+<!-- student-build:code-check
+workflow: Approve Volunteer Hours (Admin)
+form: mcq
+layer: service
+architecture_ok: yes
+implement_confidence: 0.82
+passed: yes
+note: Student identified the service as the layer coordinating admin dashboard summary figures.
+-->
+
+<!-- student-build:code-check
+workflow: Approve Volunteer Hours (Admin)
+form: snippet
+layer: model
+architecture_ok: yes
+implement_confidence: 0.82
+passed: yes
+note: Student indexed the review decision timestamp used for daily approval/rejection totals.
+-->
+
+<!-- student-build:code-check
+workflow: Approve Volunteer Hours (Admin)
+form: snippet
+layer: router
+architecture_ok: yes
+implement_confidence: 0.82
+passed: yes
+note: Student completed the approve handler by calling the service decision method.
+-->
+
+<!-- student-build:code-check
+workflow: Approve Volunteer Hours (Admin)
+form: choice
+layer: service
+architecture_ok: yes
+implement_confidence: 0.82
+passed: yes
+note: Student chose to require a rejection reason and persist it through the existing admin-notes field.
 -->
 
 ## Deployed app

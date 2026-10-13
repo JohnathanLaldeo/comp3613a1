@@ -1,0 +1,41 @@
+{% extends "authenticated-base.html" %}
+{% block title %}Review Queue{% endblock %}
+
+{% block subpage_content %}
+<div class="student-shell">
+  <h1 class="page-title mb-4">Hours Review Queue</h1>
+
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle dashboard-submissions-table mb-0">
+      <thead>
+        <tr>
+          <th scope="col">Student</th>
+          <th scope="col">Date</th>
+          <th scope="col">Activity</th>
+          <th scope="col">Hours</th>
+          <th scope="col">Status</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if pending_logs %}
+        {% for log in pending_logs %}
+        <tr>
+          <td>{{ log.student }}</td>
+          <td>{{ log.event_date.strftime("%d %b") }}</td>
+          <td>{{ log.activity }}</td>
+          <td>{{ log.hours }}</td>
+          <td><span class="status-badge status-{{ log.status }}">{{ log.status|title }}</span></td>
+          <td><a href="{{ url_for('admin_review_detail', log_id=log.log_id) }}">Review</a></td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+          <td colspan="6" class="text-center">No submissions waiting for review.</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -2,38 +2,37 @@
 {% block title %}Review Submission{% endblock %}
 
 {% block subpage_content %}
-<div class="student-shell narrow">
-  <div class="phase-panel">
-    <div class="section-header mb-3">
-      <h2>Review submission</h2>
-      <a href="{{ url_for('admin_home_view') }}">Back to queue</a>
+<div class="student-shell">
+  <a class="review-back-link" href="{{ url_for('admin_review_queue_view') }}">&lt; Back to Queue</a>
+  <h1 class="page-title mb-4">Review Submission</h1>
+
+  <form method="post" action="{{ url_for('admin_reject_log', log_id=log.id) }}">
+    <div class="review-layout">
+      <div class="detail-block review-submission-details">
+        <div class="detail-row"><strong>Student:</strong> #{{ log.student_id }}</div>
+        <div class="detail-row"><strong>Date:</strong> {{ log.event_date.strftime("%d %b %Y") }}</div>
+        <div class="detail-row"><strong>Activity:</strong> {{ log.activity }}</div>
+        <div class="detail-row"><strong>Hours:</strong> {{ log.hours }}</div>
+        {% if log.notes %}
+        <div class="detail-row"><strong>Notes:</strong> {{ log.notes }}</div>
+        {% endif %}
+      </div>
+
+      <div class="review-rejection-field">
+        <label class="form-label fw-bold" for="admin_notes">Rejection reason (required to reject)</label>
+        <textarea class="form-control" id="admin_notes" name="admin_notes" rows="5" placeholder="Type reason here..." required></textarea>
+      </div>
     </div>
 
-    <div class="detail-block mb-4">
-      <div class="detail-row"><strong>Student:</strong> #{{ log.student_id }}</div>
-      <div class="detail-row"><strong>Date:</strong> {{ log.event_date }}</div>
-      <div class="detail-row"><strong>Hours:</strong> {{ log.hours }}</div>
-      <div class="detail-row"><strong>Activity:</strong> {{ log.activity }}</div>
-      {% if log.notes %}
-      <div class="detail-row"><strong>Student notes / proof:</strong> {{ log.notes }}</div>
-      {% endif %}
+    <div class="review-actions">
+      <button
+        type="submit"
+        class="btn btn-brand"
+        formaction="{{ url_for('admin_approve_log', log_id=log.id) }}"
+        formnovalidate
+      >Approve</button>
+      <button type="submit" class="btn btn-outline-brand">Reject</button>
     </div>
-
-    <form method="post" action="{{ url_for('admin_approve_log', log_id=log.id) }}">
-      <div class="mb-3">
-        <label class="form-label" for="admin_notes">Notes</label>
-        <textarea class="form-control" id="admin_notes" name="admin_notes" rows="3" placeholder="Add approval or rejection notes"></textarea>
-      </div>
-      <div class="d-flex gap-2 flex-wrap">
-        <button type="submit" class="btn btn-brand">Approve</button>
-      </div>
-    </form>
-
-    <form method="post" action="{{ url_for('admin_reject_log', log_id=log.id) }}" class="mt-3">
-      <div class="d-flex gap-2 flex-wrap">
-        <button type="submit" class="btn btn-outline-secondary">Reject</button>
-      </div>
-    </form>
-  </div>
+  </form>
 </div>
 {% endblock %}

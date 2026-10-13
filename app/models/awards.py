@@ -18,7 +18,8 @@ class VolunteerLog(SQLModel, table=True):
     notes: Optional[str] = None
     status: str = Field(default="pending", index=True)
     admin_notes: Optional[str] = None
-    approved_at: Optional[datetime] = None
+
+    approved_at: Optional[datetime] = Field(default=None, index=True)
 
 
 class Prize(SQLModel, table=True):

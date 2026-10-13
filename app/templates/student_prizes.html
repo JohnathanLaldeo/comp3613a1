@@ -26,9 +26,7 @@
         {% if prize.id in redeemed_ids %}
         <button class="btn btn-secondary w-100" type="button" disabled>Redeemed</button>
         {% elif approved_hours >= prize.points_required and prize.stock_available > 0 %}
-        <form method="post" action="{{ url_for('user_prize_redeem', prize_id=prize.id) }}">
-          <button class="btn btn-brand w-100" type="submit">Redeem prize</button>
-        </form>
+        <a class="btn btn-brand w-100" href="{{ url_for('user_prize_confirm_view', prize_id=prize.id) }}">Redeem prize</a>
         {% else %}
         <button class="btn btn-outline-brand w-100" type="button" disabled>Need more hours</button>
         {% endif %}

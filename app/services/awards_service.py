@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime, time, timedelta
 
 from app.repositories.awards import AwardRepository
 
@@ -50,16 +50,38 @@ class AwardService:
         return {"logs": logs, "approved_hours": self.repo.get_approved_hours(student_id)}
 
     def get_admin_queue(self):
-        logs = self.repo.get_pending_logs()
         return {
-            "pending_logs": logs,
-            "total_pending": len(logs),
+            "pending_logs": self.repo.get_pending_summaries(),
+            "total_pending": self.repo.count_logs("pending"),
+        }
+
+    def get_log_for_review(self, log_id: int):
+        return self.repo.get_log_by_id(log_id)
+
+    def get_admin_dashboard(self):
+        day_start = datetime.combine(datetime.utcnow().date(), time.min)
+        next_day = day_start + timedelta(days=1)
+        return {
+            "pending_reviews": self.repo.count_logs("pending"),
+            "approved_today": self.repo.count_logs(
+                "approved",
+                starts_at=day_start,
+                ends_at=next_day,
+            ),
+            "rejected_today": self.repo.count_logs(
+                "rejected",
+                starts_at=day_start,
+                ends_at=next_day,
+            ),
+            "latest_pending": self.repo.get_pending_summaries(limit=2),
         }
 
     def decide_log(self, *, log_id: int, admin_id: int, action: str, admin_notes: str | None = None):
         if action not in {"approved", "rejected"}:
             raise ValueError("Unsupported decision")
         note_value = (admin_notes or "").strip() or None
+        if action == "rejected" and note_value is None:
+            raise ValueError("Please provide a rejection reason")
         return self.repo.update_log_status(
             log_id=log_id,
             status=action,
@@ -76,6 +98,20 @@ class AwardService:
             "prizes": prizes,
             "redeemed_ids": redeemed_ids,
             "approved_hours": approved_hours,
+        }
+
+    def get_prize_confirmation(self, *, student_id: int, prize_id: int):
+        prize = self.repo.get_prize_by_id(prize_id)
+        if prize is None:
+            raise ValueError("Prize not found")
+
+        current_balance = self.repo.get_approved_hours(student_id)
+        cost = prize.points_required
+        return {
+            "prize": prize,
+            "cost": cost,
+            "current_balance": current_balance,
+            "balance_after": current_balance - cost,
         }
 
     def redeem_prize(self, *, student_id: int, prize_id: int):

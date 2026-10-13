@@ -1,0 +1,25 @@
+{% extends "authenticated-base.html" %}
+{% block title %}Confirm Redemption{% endblock %}
+
+{% block subpage_content %}
+<div class="prize-confirm-card">
+  <h1 class="page-title text-center mb-4">Confirm Redemption</h1>
+
+  <div class="prize-confirm-details">
+    <div class="prize-confirm-image" aria-hidden="true">★</div>
+    <div>
+      <h2 class="h4 fw-bold">{{ prize.name }}</h2>
+      <p>Cost: {{ cost }} pts</p>
+      <p>Balance now: {{ current_balance }} pts</p>
+      <p class="fw-bold">Balance after: {{ balance_after }} pts</p>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-3 mt-4">
+    <form method="post" action="{{ url_for('user_prize_redeem', prize_id=prize.id) }}">
+      <button class="btn btn-brand prize-confirm-action" type="submit">Confirm</button>
+    </form>
+    <a class="btn btn-outline-brand prize-confirm-action" href="{{ url_for('user_prizes_view') }}">Cancel</a>
+  </div>
+</div>
+{% endblock %}
