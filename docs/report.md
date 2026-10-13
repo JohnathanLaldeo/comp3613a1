@@ -148,7 +148,7 @@ The admin dashboard now provides Pending Reviews, Approved Today, Rejected Today
 
 The review detail screen now follows the wireframe's side-by-side submission details and required rejection-reason field. The reason is validated in the service and saved in the existing admin-notes field. The student verified the review queue, detail layout, approval/rejection actions, required-reason behavior, and updated dashboard totals against the wireframes.
 
-Prize redemption now opens a confirmation screen showing the prize, cost, current points balance, and balance after redemption. Confirm posts to the existing redemption service/repository flow; Cancel returns to the catalog. The student tested as Bob: Redeem opened the confirmation page without committing, and pressing Confirm redeemed the prize.
+Prize redemption now opens a confirmation screen showing the prize, cost, current points balance, and balance after redemption. Confirm posts to the existing redemption service/repository flow; Cancel returns to the catalog. The student tested as Bob: Redeem opened the confirmation page without committing, pressing Confirm redeemed the prize, and Cancel returned to the catalog without redeeming. The student reports that redeeming points works well.
 
 The Log Volunteer Hours wireframe now has Date, Activity, Hours, an admin-review note, optional text Notes/proof, and Submit for Review / Cancel actions. The student selected text-only notes and identified the service as the layer coordinating submission validation. File uploads and fractional-hour entries are not included.
 
