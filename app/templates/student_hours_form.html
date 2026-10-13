@@ -1,29 +1,38 @@
 {% extends "authenticated-base.html" %}
-{% block title %}Log Hours{% endblock %}
+{% block title %}Log Volunteer Hours{% endblock %}
 
 {% block subpage_content %}
-<div class="student-shell narrow">
-  <div class="phase-panel">
-    <div class="section-header mb-3">
-      <h2>Log volunteer hours</h2>
-      <a href="{{ url_for('user_hours_view') }}">Back to my hours</a>
-    </div>
-
-    <form method="post" action="{{ url_for('user_hours_create') }}">
+<div class="student-shell">
+  <h1 class="page-title mb-4">Log Volunteer Hours</h1>
+  <form class="volunteer-form" method="post" action="{{ url_for('user_hours_create') }}">
+    <div class="volunteer-form-fields">
       <div class="mb-3">
-        <label class="form-label" for="event_date">Volunteer date</label>
+        <label class="form-label fw-bold" for="event_date">Date</label>
         <input class="form-control" type="date" id="event_date" name="event_date" required>
       </div>
       <div class="mb-3">
-        <label class="form-label" for="hours">Hours</label>
-        <input class="form-control" type="number" id="hours" name="hours" min="1" max="50" value="1" required>
+        <label class="form-label fw-bold" for="activity">Activity</label>
+        <input class="form-control" type="text" id="activity" name="activity" placeholder="e.g. Beach cleanup" required>
       </div>
-      <div class="mb-4">
-        <label class="form-label" for="description">What did you do?</label>
-        <textarea class="form-control" id="description" name="description" rows="4" placeholder="e.g. Mentored first-year students during the welcome week" required></textarea>
+      <div class="mb-3 volunteer-hours-field">
+        <label class="form-label fw-bold" for="hours">Hours</label>
+        <input class="form-control" type="number" id="hours" name="hours" min="1" max="50" step="1" value="1" required>
       </div>
-      <button type="submit" class="btn btn-brand">Submit for approval</button>
-    </form>
-  </div>
+    </div>
+
+    <aside class="volunteer-review-note">
+      Hours are reviewed by an admin before they count.
+    </aside>
+
+    <div class="mb-3 volunteer-notes-field">
+      <label class="form-label fw-bold" for="notes">Notes / proof (optional)</label>
+      <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Add details about your volunteer activity"></textarea>
+    </div>
+
+    <div class="d-flex flex-wrap gap-3">
+      <button type="submit" class="btn btn-brand">Submit for Review</button>
+      <a class="btn btn-outline-brand volunteer-cancel" href="{{ url_for('user_home_view') }}">Cancel</a>
+    </div>
+  </form>
 </div>
 {% endblock %}

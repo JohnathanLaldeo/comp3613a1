@@ -13,7 +13,10 @@
       <div class="detail-row"><strong>Student:</strong> #{{ log.student_id }}</div>
       <div class="detail-row"><strong>Date:</strong> {{ log.event_date }}</div>
       <div class="detail-row"><strong>Hours:</strong> {{ log.hours }}</div>
-      <div class="detail-row"><strong>Summary:</strong> {{ log.description }}</div>
+      <div class="detail-row"><strong>Activity:</strong> {{ log.activity }}</div>
+      {% if log.notes %}
+      <div class="detail-row"><strong>Student notes / proof:</strong> {{ log.notes }}</div>
+      {% endif %}
     </div>
 
     <form method="post" action="{{ url_for('admin_approve_log', log_id=log.id) }}">

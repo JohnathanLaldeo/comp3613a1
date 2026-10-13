@@ -19,7 +19,8 @@
           <tr>
             <th>Date</th>
             <th>Hours</th>
-            <th>Details</th>
+            <th>Activity</th>
+            <th>Notes</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -28,7 +29,8 @@
           <tr>
             <td>{{ log.event_date }}</td>
             <td>{{ log.hours }}</td>
-            <td>{{ log.description }}</td>
+            <td>{{ log.activity }}</td>
+            <td>{{ log.notes or "—" }}</td>
             <td><span class="status-badge status-{{ log.status }}">{{ log.status }}</span></td>
           </tr>
           {% endfor %}

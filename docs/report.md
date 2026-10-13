@@ -48,7 +48,8 @@ erDiagram
     date submitted_at
     date event_date
     int hours
-    text description
+    string activity
+    text notes
     string status
     text admin_notes
     datetime approved_at
@@ -133,11 +134,47 @@ covered: yes
 
 ## Theming
 
-Branding preferences and how they were applied (landing / login / register).
+Branding preferences: deep green primary, gold accent, white background, dark grey text; bold sans-serif headings with clean sans-serif body text; friendly and encouraging tone; text-only StarServe wordmark with a small star.
+
+Applied across the public landing, login, registration, and authenticated pages.
 
 ## Implementation notes
 
-One named workflow at a time. Include verify notes and polish / model revisions (Phase 5). Do not treat the first build as final.
+The student dashboard has been polished against its wireframe: student navigation is in the top bar; the dashboard welcomes the signed-in student by username; action buttons are left-aligned below the summary cards; summary labels read Verified Hours, Points Balance, and Pending Submissions; Recent Submissions displays Date, Activity, Hours, and Status. The existing 1:1 verified-hour-to-point rule is retained per student direction. The student refreshed and confirmed these dashboard details now match.
+
+Log Volunteer Hours was revised to store Activity separately from optional text Notes/proof, following the student's model and workflow choices. The form and student/admin log views use those fields; existing volunteer log descriptions are migrated to Activity at startup. The student verified the form against its wireframe and confirmed the submitted details persist and display.
+
+The Log Volunteer Hours wireframe now has Date, Activity, Hours, an admin-review note, optional text Notes/proof, and Submit for Review / Cancel actions. The student selected text-only notes and identified the service as the layer coordinating submission validation. File uploads and fractional-hour entries are not included.
+
+<!-- student-build:code-check
+workflow: Log Volunteer Hours (Student)
+form: choice
+layer: service
+architecture_ok: yes
+implement_confidence: 0.82
+passed: yes
+note: Student selected the service to coordinate validation of activity and hour submissions.
+-->
+
+<!-- student-build:code-check
+workflow: Log Volunteer Hours (Student)
+form: snippet
+layer: model
+architecture_ok: yes
+implement_confidence: 0.82
+passed: yes
+note: Student added separate required activity and optional notes fields to VolunteerLog.
+-->
+
+<!-- student-build:code-check
+workflow: Log Volunteer Hours (Student)
+form: snippet
+layer: router
+architecture_ok: yes
+implement_confidence: 0.82
+passed: yes
+note: Student bound activity and optional notes from the form and passed them to the service.
+-->
 
 ## Deployed app
 

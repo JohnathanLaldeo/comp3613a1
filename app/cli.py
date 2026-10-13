@@ -57,6 +57,7 @@ def cmd_seed(args: argparse.Namespace) -> None:
     from app.repositories.user import UserRepository
     from app.schemas.user import AdminCreate, RegularUserCreate
     from sqlmodel import select
+    from app.utilities.security import encrypt_password
 
     _ensure_models_loaded()
     ensure_db_and_tables()
@@ -77,14 +78,13 @@ def cmd_seed(args: argparse.Namespace) -> None:
                 skipped += 1
                 continue
             payload_cls = AdminCreate if role == "admin" else RegularUserCreate
-            repo.create(
-                payload_cls(
-                    username=username,
-                    email=email,
-                    password=password,
-                    role=role,
-                )
+            payload = payload_cls(
+                username=username,
+                email=email,
+                password=encrypt_password(password),
+                role=role,
             )
+            repo.create(payload)
             print(f"  create {username} ({role})")
             created += 1
 
@@ -127,13 +127,15 @@ def cmd_seed(args: argparse.Namespace) -> None:
                 student_id=bob_user.id,
                 event_date="2026-09-12",
                 hours=6,
-                description="Mentored first-year students during orientation week.",
+                activity="Orientation week mentoring",
+                notes="Mentored first-year students.",
             )
             award_repo.create_volunteer_log(
                 student_id=bob_user.id,
                 event_date="2026-09-18",
                 hours=4,
-                description="Supported the student food drive and checked in with volunteers.",
+                activity="Student food drive",
+                notes="Supported the food drive and checked in with volunteers.",
             )
             first_log = session.exec(
                 select(VolunteerLog)
@@ -289,4 +291,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

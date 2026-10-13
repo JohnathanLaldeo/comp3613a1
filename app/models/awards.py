@@ -13,7 +13,9 @@ class VolunteerLog(SQLModel, table=True):
     submitted_at: datetime = Field(default_factory=datetime.utcnow)
     event_date: date
     hours: int = Field(default=1, ge=1, le=100)
-    description: str
+
+    activity: str
+    notes: Optional[str] = None
     status: str = Field(default="pending", index=True)
     admin_notes: Optional[str] = None
     approved_at: Optional[datetime] = None

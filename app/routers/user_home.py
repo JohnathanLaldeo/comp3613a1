@@ -60,7 +60,8 @@ async def user_hours_create(
     db: SessionDep,
     event_date: str = Form(...),
     hours: int = Form(...),
-    description: str = Form(...),
+    activity: str = Form(...),
+    notes: str = Form(""),
 ):
     award_service = AwardService(AwardRepository(db))
     try:
@@ -68,7 +69,8 @@ async def user_hours_create(
             student_id=user.id,
             event_date=__import__("datetime").date.fromisoformat(event_date),
             hours=hours,
-            description=description,
+            activity=activity,
+            notes=notes,
         )
         flash(request, "Volunteer hours submitted for approval.")
     except ValueError as exc:

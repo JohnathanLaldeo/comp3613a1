@@ -4,6 +4,7 @@ import time
 from contextlib import contextmanager
 
 from sqlalchemy.exc import DBAPIError, OperationalError, ProgrammingError
+from sqlalchemy import inspect, text
 from sqlmodel import SQLModel, Session, create_engine
 
 from app.config import get_settings
@@ -38,6 +39,28 @@ def create_db_and_tables() -> None:
     import app.models  # noqa: F401
 
     SQLModel.metadata.create_all(engine)
+    _migrate_volunteer_log_fields()
+
+
+def _migrate_volunteer_log_fields() -> None:
+    columns = {column["name"] for column in inspect(engine).get_columns("volunteerlog")}
+    if "activity" in columns and "notes" in columns:
+        return
+
+    with engine.begin() as connection:
+        if "activity" not in columns:
+            connection.execute(
+                text("ALTER TABLE volunteerlog ADD COLUMN activity VARCHAR NOT NULL DEFAULT ''")
+            )
+        if "notes" not in columns:
+            connection.execute(text("ALTER TABLE volunteerlog ADD COLUMN notes VARCHAR"))
+        if "description" in columns:
+            connection.execute(
+                text(
+                    "UPDATE volunteerlog SET activity = description "
+                    "WHERE activity = ''"
+                )
+            )
 
 
 def drop_all() -> None:

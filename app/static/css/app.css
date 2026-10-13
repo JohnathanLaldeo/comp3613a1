@@ -208,30 +208,159 @@ body {
   font-weight: 600;
 }
 
-#sidebar {
+.authenticated-page {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.awards-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem clamp(1rem, 3vw, 2rem);
   background: var(--brand-sidebar);
-  color: var(--brand-sidebar-text);
-}
-
-#sidebar .brand-wordmark {
   color: #fff;
-  font-size: 1.3rem;
-  justify-content: center;
-  margin: 0.75rem 0 1.5rem;
 }
 
-#sidebar .nav-link {
+.awards-topbar-title {
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  font-weight: 800;
+}
+
+.awards-nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+}
+
+.awards-nav-link {
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.35rem;
   color: var(--brand-sidebar-text);
+  font-size: 0.92rem;
+  text-decoration: none;
 }
 
-#sidebar .nav-link:hover,
-#sidebar .nav-link.active {
-  background: rgba(198, 154, 47, 0.18);
+.awards-nav-link:hover,
+.awards-nav-link.active {
+  background: rgba(198, 154, 47, 0.2);
   color: #fff;
+}
+
+.awards-content {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  padding: 1rem clamp(1rem, 3vw, 2rem) 2rem;
 }
 
 .student-shell {
   padding: 0.25rem 0;
+}
+
+.dashboard-welcome {
+  margin: 1rem 0 1.5rem;
+  font-size: clamp(1.45rem, 2.5vw, 1.8rem);
+  font-weight: 800;
+}
+
+.dashboard-actions {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-actions .btn {
+  min-width: 250px;
+  min-height: 60px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.dashboard-submissions h2 {
+  margin: 0 0 1rem;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.dashboard-submissions-table th {
+  background: #f0f0f0;
+  text-align: center;
+}
+
+.dashboard-submissions-table td {
+  text-align: center;
+}
+
+.dashboard-submissions-table td:nth-child(2) {
+  text-align: left;
+}
+
+.volunteer-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(250px, 0.8fr);
+  gap: 0 3rem;
+  max-width: 900px;
+}
+
+.volunteer-form-fields {
+  grid-column: 1;
+}
+
+.volunteer-form .form-control {
+  min-height: 3rem;
+}
+
+.volunteer-hours-field .form-control {
+  max-width: 12rem;
+}
+
+.volunteer-review-note {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  min-height: 14rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  border: 2px dashed #737373;
+  background: #f4f4f4;
+  color: var(--brand-ink);
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+.volunteer-notes-field {
+  grid-column: 1 / -1;
+}
+
+.volunteer-cancel {
+  min-width: 8rem;
+}
+
+@media (max-width: 700px) {
+  .volunteer-form {
+    grid-template-columns: 1fr;
+  }
+
+  .volunteer-form-fields,
+  .volunteer-review-note,
+  .volunteer-notes-field {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .volunteer-review-note {
+    min-height: 8rem;
+    margin: 0.5rem 0 1rem;
+  }
 }
 
 .narrow {

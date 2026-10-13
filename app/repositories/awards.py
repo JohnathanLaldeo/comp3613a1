@@ -18,7 +18,8 @@ class AwardRepository:
         student_id: int,
         event_date,
         hours: int,
-        description: str,
+        activity: str,
+        notes: str | None = None,
     ) -> VolunteerLog:
         if isinstance(event_date, str):
             event_date = date.fromisoformat(event_date)
@@ -26,7 +27,8 @@ class AwardRepository:
             student_id=student_id,
             event_date=event_date,
             hours=hours,
-            description=description,
+            activity=activity,
+            notes=notes,
             status="pending",
         )
         self.db.add(log)
@@ -132,4 +134,3 @@ class AwardRepository:
         return self.db.exec(
             select(func.count()).select_from(Redemption).where(Redemption.student_id == student_id)
         ).one()
-

@@ -23,16 +23,26 @@ class AwardService:
             "points": approved_hours,
         }
 
-    def create_log(self, *, student_id: int, event_date: date, hours: int, description: str):
-        if not description.strip():
-            raise ValueError("Please add a short description")
+    def create_log(
+        self,
+        *,
+        student_id: int,
+        event_date: date,
+        hours: int,
+        activity: str,
+        notes: str | None = None,
+    ):
+        if not activity.strip():
+            raise ValueError("Please add an activity")
         if hours <= 0:
             raise ValueError("Hours must be greater than zero")
+        notes_value = (notes or "").strip() or None
         return self.repo.create_volunteer_log(
             student_id=student_id,
             event_date=event_date,
             hours=hours,
-            description=description.strip(),
+            activity=activity.strip(),
+            notes=notes_value,
         )
 
     def get_student_hours(self, student_id: int):
