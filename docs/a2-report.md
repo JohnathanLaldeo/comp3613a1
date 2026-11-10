@@ -1,7 +1,7 @@
 # COMP 3613 Assignment 2: Testing the Student Awards App
 
-**Name:** _[your name]_
-**Student ID:** _[your ID]_
+**Name:** Johnathan Laldeo
+**Student ID:** 816046240
 **Repository:** https://github.com/JohnathanLaldeo/comp3613a1
 **Deployed app (from A1):** https://comp3613a1-1-9j9f.onrender.com
 
