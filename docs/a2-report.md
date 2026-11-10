@@ -25,51 +25,7 @@ Stack: FastAPI, SQLModel, Jinja templates and PostgreSQL on Render (SQLite local
 
 ## 3. Entity relationship diagram
 
-```mermaid
-erDiagram
-  USER ||--o{ VOLUNTEER_LOG : submits
-  USER ||--o{ VOLUNTEER_LOG : approves
-  USER ||--o{ REDEMPTION : redeems
-  PRIZE ||--o{ REDEMPTION : redeemed_for
-
-  USER {
-    int id PK
-    string username
-    string email
-    string password
-    string role
-  }
-  VOLUNTEER_LOG {
-    int id PK
-    int student_id FK
-    int approved_by_id FK
-    datetime submitted_at
-    date event_date
-    int hours
-    string activity
-    string notes
-    string status
-    string admin_notes
-    datetime approved_at
-  }
-  PRIZE {
-    int id PK
-    string name
-    string description
-    int points_required
-    string category
-    bool active
-    int stock_available
-  }
-  REDEMPTION {
-    int id PK
-    int student_id FK
-    int prize_id FK
-    datetime redeemed_at
-    string status
-    string notes
-  }
-```
+``![Entity relationship diagram](diagrams/erd.png)``
 
 Points balance = approved hours − sum of `points_required` for the student's redemptions. It is calculated when needed, not stored.
 
@@ -98,18 +54,18 @@ Use two browsers (or one normal and one private window) so the student and the a
 
 | ID | Wireframe | User | Task | Success criteria | Actual result | Pass/Fail |
 |----|-----------|------|------|------------------|---------------|-----------|
-| UAT-1 | W1 | bob | Log in and view the dashboard. | Dashboard shows Welcome bob, Verified Hours **6**, Points Balance **6**, Pending Submissions **1**, the Log Volunteer Hours and Browse Prizes buttons, and a Recent Submissions table with Date, Activity, Hours and Status. | | |
-| UAT-2 | W2 | bob | Click **+ Log Volunteer Hours**, enter today's date, activity "Beach cleanup", 3 hours, and a note, then click **Submit for Review**. | A success message appears. The new entry shows as **pending** on My Hours, and Pending Submissions on the dashboard goes up by 1. | | |
-| UAT-3 | W2 | bob | Open Log Hours, enter 0 hours (or a blank activity) and submit. Then open the form and click **Cancel**. | The entry is not saved and an error or validation message is shown. Cancel returns to the dashboard without saving. | | |
-| UAT-4 | W7, W8 | admin | Log in, click **Open Review Queue**, find bob's "Beach cleanup" entry and click **Review**. | The queue lists only pending entries with Student, Date, Activity, Hours and Status. The review page shows the student, date, activity, hours and notes, with Approve and Reject buttons and a rejection-reason box. | | |
-| UAT-5 | W8 | admin | On that entry, click **Reject** with the reason box empty. | The entry is **not** rejected, a "Please provide a rejection reason" message appears, and the entry stays pending. | | |
-| UAT-6 | W8, W6 | admin | Approve the "Beach cleanup" entry, then go to the Dashboard. | You return to the queue with a success message and the entry is gone from the queue. The dashboard's Approved Today count goes up by 1 and Pending Reviews goes down by 1. | | |
-| UAT-7 | W8, W3 | admin, then bob | Admin: reject bob's remaining pending entry with the reason "Hours do not match the sign-in sheet". Bob: open **My Hours**. | The entry shows **rejected** with the reason displayed below the table and a **Resubmit** action. Filter: Rejected shows only rejected entries, and Filter: All shows every entry. | | |
-| UAT-8 | W3, W2 | bob | Click **Resubmit** on the rejected entry, change the hours, and submit. | The form opens pre-filled with the rejected entry's details and the rejection reason. After submitting, a new **pending** entry appears on My Hours. | | |
-| UAT-9 | W4 | bob | Open **Prizes**. | The balance is shown ("N points available"). Each prize shows name, description, cost and stock. Prizes bob can afford show **Redeem prize**, and the others show **Need more hours**. | | |
-| UAT-10 | W5 | bob | Click **Redeem prize** on an affordable prize, check the confirmation, then click **Cancel**. | The confirmation shows the prize, its cost, Balance now and Balance after (now minus cost). Cancel returns to Prizes with **no** change to balance or stock. | | |
-| UAT-11 | W5, W4, W1 | bob | Redeem the same prize again and click **Confirm**. | A success message appears. The prize now shows **Redeemed**, its stock is down by 1, and the points balance on Prizes and the Dashboard is down by the prize cost. | | |
-| UAT-12 | W6 | bob | While logged in as bob, go to http://localhost:5000/admin. | Access is refused (401 Unauthorized page) and no admin data is shown. | | |
+| UAT-1 | W1 | bob | Log in and view the dashboard. | Dashboard shows Welcome bob, Verified Hours **6**, Points Balance **6**, Pending Submissions **1**, the Log Volunteer Hours and Browse Prizes buttons, and a Recent Submissions table with Date, Activity, Hours and Status. | Dashboard showed Welcome bob, Verified Hours 6, Points Balance 6, Pending Submissions 1, both buttons and the Recent Submissions table. | Pass |
+| UAT-2 | W2 | bob | Click **+ Log Volunteer Hours**, enter today's date, activity "Beach cleanup", 3 hours, and a note, then click **Submit for Review**. | A success message appears. The new entry shows as **pending** on My Hours, and Pending Submissions on the dashboard goes up by 1. | Success message shown; Beach cleanup (3h) listed as pending on My Hours; Pending Submissions went to 2. | Pass |
+| UAT-3 | W2 | bob | Open Log Hours, enter 0 hours (or a blank activity) and submit. Then open the form and click **Cancel**. | The entry is not saved and an error or validation message is shown. Cancel returns to the dashboard without saving. | 0 hours was rejected with a validation message and nothing was saved; Cancel returned to the dashboard. | Pass |
+| UAT-4 | W7, W8 | admin | Log in, click **Open Review Queue**, find bob's "Beach cleanup" entry and click **Review**. | The queue lists only pending entries with Student, Date, Activity, Hours and Status. The review page shows the student, date, activity, hours and notes, with Approve and Reject buttons and a rejection-reason box. | Queue listed only pending entries with all columns; review page showed the entry details, Approve/Reject and the reason box. | Pass |
+| UAT-5 | W8 | admin | On that entry, click **Reject** with the reason box empty. | The entry is **not** rejected, a "Please provide a rejection reason" message appears, and the entry stays pending. | "Please provide a rejection reason" shown; entry stayed pending. | Pass |
+| UAT-6 | W8, W6 | admin | Approve the "Beach cleanup" entry, then go to the Dashboard. | You return to the queue with a success message and the entry is gone from the queue. The dashboard's Approved Today count goes up by 1 and Pending Reviews goes down by 1. | Returned to the queue with a success message; entry removed; Approved Today +1 and Pending Reviews -1. | Pass |
+| UAT-7 | W8, W3 | admin, then bob | Admin: reject bob's remaining pending entry with the reason "Hours do not match the sign-in sheet". Bob: open **My Hours**. | The entry shows **rejected** with the reason displayed below the table and a **Resubmit** action. Filter: Rejected shows only rejected entries, and Filter: All shows every entry. | Entry shown as rejected with the reason and a Resubmit link; Rejected filter showed only that entry, All showed every entry. | Pass |
+| UAT-8 | W3, W2 | bob | Click **Resubmit** on the rejected entry, change the hours, and submit. | The form opens pre-filled with the rejected entry's details and the rejection reason. After submitting, a new **pending** entry appears on My Hours. | Form opened pre-filled with the reason shown; a new pending entry appeared after submitting. | Pass |
+| UAT-9 | W4 | bob | Open **Prizes**. | The balance is shown ("N points available"). Each prize shows name, description, cost and stock. Prizes bob can afford show **Redeem prize**, and the others show **Need more hours**. | "9 points available" shown; prizes listed with cost and stock; affordable ones showed Redeem prize, Festival Pass showed Need more hours. | Pass |
+| UAT-10 | W5 | bob | Click **Redeem prize** on an affordable prize, check the confirmation, then click **Cancel**. | The confirmation shows the prize, its cost, Balance now and Balance after (now minus cost). Cancel returns to Prizes with **no** change to balance or stock. | Confirmation showed Cost 4, Balance now 9, Balance after 5; Cancel changed nothing. | Pass |
+| UAT-11 | W5, W4, W1 | bob | Redeem the same prize again and click **Confirm**. | A success message appears. The prize now shows **Redeemed**, its stock is down by 1, and the points balance on Prizes and the Dashboard is down by the prize cost. | Success message; Campus Coffee Card showed Redeemed, stock 5 to 4; balance 5 on Prizes and Dashboard. | Pass |
+| UAT-12 | W6 | bob | While logged in as bob, go to http://localhost:5000/admin. | Access is refused (401 Unauthorized page) and no admin data is shown. | 401 Unauthorized page shown; no admin data visible. | Pass |
 
 ### 5.2 Unit test plan
 
@@ -226,8 +182,8 @@ _Collection run with Newman, Postman's command-line collection runner: `npx newm
 
 ### 7.4 User Acceptance Test report
 
-_Fill in the **Actual result** and **Pass/Fail** columns in section 5.1 while carrying out each task, then summarise here:_
+_UAT was carried out by the developer in the browser against a freshly seeded local app (`python manage.py init`), with bob in one window and admin in a private window. Actual results are recorded in section 5.1._
 
 | Total UAT cases | Passed | Failed | Notes |
 |-----------------|--------|--------|-------|
-| 12 | | | |
+| 12 | 12 | 0 | All acceptance criteria met; no defects found. |
