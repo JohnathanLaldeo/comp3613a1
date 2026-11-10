@@ -7,6 +7,7 @@ from sqlmodel import Session, func, select
 
 from app.models.awards import Prize, Redemption, VolunteerLog
 from app.models.user import User
+from app.utilities.errors import ConflictError, NotFoundError
 
 
 class AwardRepository:
@@ -43,6 +44,12 @@ class AwardRepository:
             .where(VolunteerLog.student_id == student_id)
             .order_by(VolunteerLog.submitted_at.desc())
         ).all()
+
+    def get_logs(self, status: str | None = None) -> list[VolunteerLog]:
+        statement = select(VolunteerLog).order_by(VolunteerLog.submitted_at.desc())
+        if status is not None:
+            statement = statement.where(VolunteerLog.status == status)
+        return self.db.exec(statement).all()
 
     def get_pending_logs(self) -> list[VolunteerLog]:
         return self.db.exec(
@@ -104,7 +111,7 @@ class AwardRepository:
     ) -> VolunteerLog:
         log = self.db.get(VolunteerLog, log_id)
         if log is None:
-            raise ValueError("Volunteer log not found")
+            raise NotFoundError("Volunteer log not found")
 
         log.status = status
         log.approved_by_id = admin_id
@@ -120,6 +127,16 @@ class AwardRepository:
             select(func.coalesce(func.sum(VolunteerLog.hours), 0))
             .where(VolunteerLog.student_id == student_id)
             .where(VolunteerLog.status == "approved")
+        ).one()
+        return int(result or 0)
+
+    def get_points_spent(self, student_id: int) -> int:
+        result = self.db.exec(
+            select(func.coalesce(func.sum(Prize.points_required), 0))
+            .select_from(Redemption)
+            .join(Prize, Redemption.prize_id == Prize.id)
+            .where(Redemption.student_id == student_id)
+            .where(Redemption.status == "redeemed")
         ).one()
         return int(result or 0)
 
@@ -143,9 +160,9 @@ class AwardRepository:
     def redeem_prize(self, *, student_id: int, prize_id: int) -> Redemption:
         prize = self.db.get(Prize, prize_id)
         if prize is None or not prize.active:
-            raise ValueError("Prize not available")
+            raise NotFoundError("Prize not available")
         if prize.stock_available <= 0:
-            raise ValueError("Prize is out of stock")
+            raise ConflictError("Prize is out of stock")
 
         existing = self.db.exec(
             select(Redemption)
@@ -154,7 +171,7 @@ class AwardRepository:
             .where(Redemption.status == "redeemed")
         ).first()
         if existing:
-            raise ValueError("Prize already redeemed")
+            raise ConflictError("Prize already redeemed")
 
         redemption = Redemption(student_id=student_id, prize_id=prize_id, status="redeemed")
         prize.stock_available -= 1

@@ -3,11 +3,33 @@ from __future__ import annotations
 from datetime import date, datetime, time, timedelta
 
 from app.repositories.awards import AwardRepository
+from app.utilities.errors import ConflictError, NotFoundError
 
 
 class AwardService:
     def __init__(self, repo: AwardRepository):
         self.repo = repo
+
+    def get_points_balance(self, student_id: int) -> int:
+        """Spendable points: approved hours minus the cost of prizes already redeemed."""
+        return self.repo.get_approved_hours(student_id) - self.repo.get_points_spent(student_id)
+
+    def get_balance(self, student_id: int) -> dict:
+        approved = self.repo.get_approved_hours(student_id)
+        spent = self.repo.get_points_spent(student_id)
+        return {"approved_hours": approved, "points_spent": spent, "points": approved - spent}
+
+    def list_student_logs(self, student_id: int):
+        return self.repo.get_user_logs(student_id)
+
+    def list_logs(self, status: str | None = None):
+        return self.repo.get_logs(status)
+
+    def list_prizes(self):
+        return self.repo.get_all_prizes()
+
+    def list_student_redemptions(self, student_id: int):
+        return self.repo.get_student_redemptions(student_id)
 
     def get_student_dashboard(self, student_id: int):
         logs = self.repo.get_user_logs(student_id)
@@ -20,7 +42,7 @@ class AwardService:
             "pending_count": pending_count,
             "logs": logs[:5],
             "prizes": prizes,
-            "points": approved_hours,
+            "points": self.get_points_balance(student_id),
         }
 
     def create_log(
@@ -45,9 +67,26 @@ class AwardService:
             notes=notes_value,
         )
 
-    def get_student_hours(self, student_id: int):
+    LOG_STATUSES = ("pending", "approved", "rejected")
+
+    def get_student_hours(self, student_id: int, status: str | None = None):
         logs = self.repo.get_user_logs(student_id)
-        return {"logs": logs, "approved_hours": self.repo.get_approved_hours(student_id)}
+        status_filter = status if status in self.LOG_STATUSES else None
+        if status_filter:
+            logs = [log for log in logs if log.status == status_filter]
+        return {
+            "logs": logs,
+            "status_filter": status_filter,
+            "rejected_logs": [log for log in logs if log.status == "rejected" and log.admin_notes],
+            "approved_hours": self.repo.get_approved_hours(student_id),
+        }
+
+    def get_resubmit_source(self, *, student_id: int, log_id: int):
+        """A student's own rejected log, used to prefill the resubmit form."""
+        log = self.repo.get_log_by_id(log_id)
+        if log is None or log.student_id != student_id or log.status != "rejected":
+            return None
+        return log
 
     def get_admin_queue(self):
         return {
@@ -93,19 +132,19 @@ class AwardService:
         prizes = self.repo.get_all_prizes()
         redemptions = self.repo.get_student_redemptions(student_id)
         redeemed_ids = {item.prize_id for item in redemptions}
-        approved_hours = self.repo.get_approved_hours(student_id)
         return {
             "prizes": prizes,
             "redeemed_ids": redeemed_ids,
-            "approved_hours": approved_hours,
+            "approved_hours": self.repo.get_approved_hours(student_id),
+            "points": self.get_points_balance(student_id),
         }
 
     def get_prize_confirmation(self, *, student_id: int, prize_id: int):
         prize = self.repo.get_prize_by_id(prize_id)
         if prize is None:
-            raise ValueError("Prize not found")
+            raise NotFoundError("Prize not found")
 
-        current_balance = self.repo.get_approved_hours(student_id)
+        current_balance = self.get_points_balance(student_id)
         cost = prize.points_required
         return {
             "prize": prize,
@@ -117,8 +156,13 @@ class AwardService:
     def redeem_prize(self, *, student_id: int, prize_id: int):
         prize = self.repo.get_prize_by_id(prize_id)
         if prize is None:
-            raise ValueError("Prize not found")
-        points = self.repo.get_approved_hours(student_id)
-        if points < prize.points_required:
+            raise NotFoundError("Prize not found")
+        already = any(
+            r.prize_id == prize_id and r.status == "redeemed"
+            for r in self.repo.get_student_redemptions(student_id)
+        )
+        if already:
+            raise ConflictError("Prize already redeemed")
+        if self.get_points_balance(student_id) < prize.points_required:
             raise ValueError("You need more approved hours to redeem this prize")
         return self.repo.redeem_prize(student_id=student_id, prize_id=prize_id)

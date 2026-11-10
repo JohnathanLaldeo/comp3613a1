@@ -70,12 +70,16 @@ async def admin_approve_log(
     admin_notes: str = Form(default=""),
 ):
     award_service = AwardService(AwardRepository(db))
-    award_service.decide_log(
-        log_id=log_id,
-        admin_id=user.id,
-        action="approved",
-        admin_notes=admin_notes,
-    )
+    try:
+        award_service.decide_log(
+            log_id=log_id,
+            admin_id=user.id,
+            action="approved",
+            admin_notes=admin_notes,
+        )
+    except ValueError as exc:
+        flash(request, str(exc), "danger")
+        return RedirectResponse(url=request.url_for("admin_review_queue_view"), status_code=status.HTTP_303_SEE_OTHER)
     flash(request, "Volunteer hours approved.")
     return RedirectResponse(url=request.url_for("admin_review_queue_view"), status_code=status.HTTP_303_SEE_OTHER)
 

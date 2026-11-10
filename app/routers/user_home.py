@@ -30,9 +30,10 @@ async def user_hours_view(
     request: Request,
     user: AuthDep,
     db: SessionDep,
+    status: str | None = None,
 ):
     award_service = AwardService(AwardRepository(db))
-    context = award_service.get_student_hours(user.id)
+    context = award_service.get_student_hours(user.id, status)
     context["user"] = user
     return templates.TemplateResponse(
         request=request,
@@ -45,11 +46,16 @@ async def user_hours_view(
 async def user_hours_new_view(
     request: Request,
     user: AuthDep,
+    db: SessionDep,
+    resubmit: int | None = None,
 ):
+    source = None
+    if resubmit is not None:
+        source = AwardService(AwardRepository(db)).get_resubmit_source(student_id=user.id, log_id=resubmit)
     return templates.TemplateResponse(
         request=request,
         name="student_hours_form.html",
-        context={"user": user},
+        context={"user": user, "source": source},
     )
 
 

@@ -4,19 +4,24 @@
 {% block subpage_content %}
 <div class="student-shell">
   <h1 class="page-title mb-4">Log Volunteer Hours</h1>
+  {% if source %}
+  <div class="alert alert-warning" role="note">
+    Resubmitting a rejected entry. Reason given: "{{ source.admin_notes }}". Update the details and submit again.
+  </div>
+  {% endif %}
   <form class="volunteer-form" method="post" action="{{ url_for('user_hours_create') }}">
     <div class="volunteer-form-fields">
       <div class="mb-3">
         <label class="form-label fw-bold" for="event_date">Date</label>
-        <input class="form-control" type="date" id="event_date" name="event_date" required>
+        <input class="form-control" type="date" id="event_date" name="event_date" value="{{ source.event_date if source else '' }}" required>
       </div>
       <div class="mb-3">
         <label class="form-label fw-bold" for="activity">Activity</label>
-        <input class="form-control" type="text" id="activity" name="activity" placeholder="e.g. Beach cleanup" required>
+        <input class="form-control" type="text" id="activity" name="activity" placeholder="e.g. Beach cleanup" value="{{ source.activity if source else '' }}" required>
       </div>
       <div class="mb-3 volunteer-hours-field">
         <label class="form-label fw-bold" for="hours">Hours</label>
-        <input class="form-control" type="number" id="hours" name="hours" min="1" max="50" step="1" value="1" required>
+        <input class="form-control" type="number" id="hours" name="hours" min="1" max="50" step="1" value="{{ source.hours if source else 1 }}" required>
       </div>
     </div>
 
@@ -26,7 +31,7 @@
 
     <div class="mb-3 volunteer-notes-field">
       <label class="form-label fw-bold" for="notes">Notes / proof (optional)</label>
-      <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Add details about your volunteer activity"></textarea>
+      <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Add details about your volunteer activity">{{ source.notes or '' if source else '' }}</textarea>
     </div>
 
     <div class="d-flex flex-wrap gap-3">

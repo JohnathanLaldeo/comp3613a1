@@ -2,9 +2,10 @@ from fastapi import Request
 import typing
 
 def flash(request: Request, message: str, type: str = "success") -> None:
-    if "_messages" not in request.session:
-        request.session["_messages"] = []
-    request.session["_messages"].append({"message": message, "type": type})
+    # Reassign (don't append in place) so the session middleware sees the change.
+    messages = list(request.session.get("_messages", []))
+    messages.append({"message": message, "type": type})
+    request.session["_messages"] = messages
 
 
 def get_flashed_messages(request: Request):

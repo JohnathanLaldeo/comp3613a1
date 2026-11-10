@@ -240,6 +240,18 @@ def cmd_users(args: argparse.Namespace) -> None:
             print(f"  - {user.id}: {user.username} ({user.role})")
 
 
+def cmd_test(args: argparse.Namespace) -> None:
+    """Run the pytest suites: all, unit only, or integration (HTML + API) only."""
+    import pytest
+
+    targets = {
+        "all": ["tests"],
+        "unit": ["tests/test_unit_awards.py"],
+        "integration": ["tests/test_integration_awards.py", "tests/test_api_awards.py"],
+    }[args.suite]
+    raise SystemExit(pytest.main([*targets, "-v"]))
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="FastStarter CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -276,6 +288,10 @@ def _build_parser() -> argparse.ArgumentParser:
 
     users_parser = subparsers.add_parser("users", help="List users")
     users_parser.set_defaults(func=cmd_users)
+
+    test_parser = subparsers.add_parser("test", help="Run unit / integration tests with pytest")
+    test_parser.add_argument("suite", nargs="?", choices=["all", "unit", "integration"], default="all")
+    test_parser.set_defaults(func=cmd_test)
 
     return parser
 

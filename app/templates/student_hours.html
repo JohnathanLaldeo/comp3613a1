@@ -11,6 +11,17 @@
     <a class="btn btn-brand" href="{{ url_for('user_hours_new_view') }}">Log new hours</a>
   </div>
 
+  <form class="mb-3" method="get" action="{{ url_for('user_hours_view') }}">
+    <label class="visually-hidden" for="status">Filter</label>
+    <select class="form-select w-auto" id="status" name="status" onchange="this.form.submit()">
+      <option value="" {% if not status_filter %}selected{% endif %}>Filter: All</option>
+      {% for value in ["pending", "approved", "rejected"] %}
+      <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>Filter: {{ value|capitalize }}</option>
+      {% endfor %}
+    </select>
+    <noscript><button class="btn btn-outline-brand btn-sm mt-2" type="submit">Apply</button></noscript>
+  </form>
+
   <div class="phase-panel">
     {% if logs %}
     <div class="table-responsive">
@@ -22,6 +33,7 @@
             <th>Activity</th>
             <th>Notes</th>
             <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -32,11 +44,23 @@
             <td>{{ log.activity }}</td>
             <td>{{ log.notes or "—" }}</td>
             <td><span class="status-badge status-{{ log.status }}">{{ log.status }}</span></td>
+            <td>
+              {% if log.status == "rejected" %}
+              <a href="{{ url_for('user_hours_new_view') }}?resubmit={{ log.id }}">Resubmit</a>
+              {% else %}—{% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
+    {% for log in rejected_logs %}
+    <div class="alert alert-danger mt-3 mb-0" role="note">
+      Rejected reason ({{ log.activity }}, {{ log.event_date }}): "{{ log.admin_notes }}"
+    </div>
+    {% endfor %}
+    {% elif status_filter %}
+    <div class="empty-state">No {{ status_filter }} submissions.</div>
     {% else %}
     <div class="empty-state">You have not submitted any hours yet.</div>
     {% endif %}

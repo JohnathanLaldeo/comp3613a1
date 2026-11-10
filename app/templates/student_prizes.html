@@ -8,7 +8,7 @@
       <p class="eyebrow">Rewards</p>
       <h1 class="page-title mb-0">Redeem your points</h1>
     </div>
-    <div class="summary-pill">{{ approved_hours }} points earned</div>
+    <div class="summary-pill">{{ points }} points available</div>
   </div>
 
   <div class="row g-4">
@@ -25,7 +25,7 @@
 
         {% if prize.id in redeemed_ids %}
         <button class="btn btn-secondary w-100" type="button" disabled>Redeemed</button>
-        {% elif approved_hours >= prize.points_required and prize.stock_available > 0 %}
+        {% elif points >= prize.points_required and prize.stock_available > 0 %}
         <a class="btn btn-brand w-100" href="{{ url_for('user_prize_confirm_view', prize_id=prize.id) }}">Redeem prize</a>
         {% else %}
         <button class="btn btn-outline-brand w-100" type="button" disabled>Need more hours</button>
