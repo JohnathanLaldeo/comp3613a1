@@ -176,7 +176,7 @@ _Screenshot of `python manage.py test integration` (21 passed):_
 
 ### 7.3 Postman collection run report
 
-_Collection run with Newman, Postman's command-line collection runner: `npx newman run postman/student-awards.postman_collection.json` against a freshly seeded app. Result: 28 requests and 51 assertions, 0 failed. The full machine-readable run report is in `postman/newman-run-report.json`._
+_Collection `postman/student-awards.postman_collection.json` imported into the Postman app and run with the Collection Runner against a freshly seeded app (`python manage.py init`). Result: 51 tests, 51 passed, 0 failed, 0 errors. The same collection was also run from the command line with Newman (`npx newman run postman/student-awards.postman_collection.json`); its machine-readable report is in `postman/newman-run-report.json`._
 
 ![Postman run](screenshots/postman-run.png)
 
